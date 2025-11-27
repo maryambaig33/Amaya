@@ -11,6 +11,9 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Shop Filtering State
+  const [activeCategory, setActiveCategory] = useState('All');
 
   const addToCart = (product: CoffeeProduct) => {
     setCart(prev => {
@@ -36,6 +39,20 @@ const App: React.FC = () => {
     setIsMenuOpen(false);
     window.scrollTo(0, 0);
   };
+
+  // Filter Logic
+  const getFilteredProducts = () => {
+    if (activeCategory === 'All') return PRODUCTS;
+    
+    return PRODUCTS.filter(product => {
+      // Normalize filter names to match product roast levels
+      // "Light Roast" -> "Light", "Espresso" -> "Espresso"
+      const normalizedFilter = activeCategory.replace(' Roast', '');
+      return product.roastLevel === normalizedFilter;
+    });
+  };
+
+  const filteredProducts = getFilteredProducts();
 
   return (
     <div className="min-h-screen flex flex-col bg-coffee-50 font-sans selection:bg-terracotta-500 selection:text-white">
@@ -284,23 +301,43 @@ const App: React.FC = () => {
               </p>
             </div>
             
-            {/* Simple Filter (Visual only for demo) */}
+            {/* Functional Filter */}
             <div className="flex flex-wrap justify-center gap-3 mb-16">
-              {['All', 'Light Roast', 'Medium Roast', 'Dark Roast', 'Espresso'].map((filter, idx) => (
-                <button 
-                  key={filter} 
-                  className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${idx === 0 ? 'bg-coffee-900 text-white shadow-md' : 'bg-white text-coffee-600 hover:bg-terracotta-50 hover:text-terracotta-700 hover:border-terracotta-200 border border-coffee-200'}`}
-                >
-                  {filter}
-                </button>
-              ))}
+              {['All', 'Light Roast', 'Medium Roast', 'Dark Roast', 'Espresso'].map((filter) => {
+                const isActive = activeCategory === filter;
+                return (
+                  <button 
+                    key={filter} 
+                    onClick={() => setActiveCategory(filter)}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                      isActive 
+                      ? 'bg-coffee-900 text-white shadow-md transform scale-105' 
+                      : 'bg-white text-coffee-600 hover:bg-terracotta-50 hover:text-terracotta-700 hover:border-terracotta-200 border border-coffee-200'
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {PRODUCTS.map(product => (
-                <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-              ))}
-            </div>
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-coffee-500 text-lg">No coffees found matching this roast level.</p>
+                <button 
+                  onClick={() => setActiveCategory('All')}
+                  className="mt-4 text-terracotta-600 hover:text-terracotta-800 underline font-medium"
+                >
+                  View all coffees
+                </button>
+              </div>
+            )}
           </section>
         )}
 
