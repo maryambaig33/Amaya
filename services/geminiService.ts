@@ -2,10 +2,8 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { PRODUCTS } from "../constants";
 
 // Initialize Gemini
-// NOTE: We safely check for process.env to avoid runtime crashes in environments 
-// that might not have it strictly defined at runtime.
-const apiKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : '';
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
+// We access process.env.API_KEY directly as it is guaranteed to be available in this environment.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const SYSTEM_INSTRUCTION = `
 You are the "Amaya Coffee Sommelier", an expert coffee concierge for Amaya Coffee.
@@ -31,12 +29,6 @@ export const getCoffeeRecommendation = async (userMessage: string): Promise<stri
   try {
     const model = 'gemini-2.5-flash';
     
-    // We create a chat-like experience using generateContent with system instructions
-    // For a full chat history, we would maintain a ChatSession, but for this simple 
-    // demo component we'll treat it as single-turn context-aware for simplicity, 
-    // or we could assume the component manages history and sends it.
-    // Here we will use a simple generation for the immediate response.
-    
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: model,
       contents: userMessage,
@@ -46,9 +38,9 @@ export const getCoffeeRecommendation = async (userMessage: string): Promise<stri
       }
     });
 
-    return response.text || "I'm having trouble smelling the coffee beans right now. Please try again.";
+    return response.text || "I'm having trouble retrieving the tasting notes right now. Please try again.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "I'm currently taking a coffee break. Please check your API key or try again later.";
+    return "I'm currently taking a short coffee break. Please check back in a moment.";
   }
 };
