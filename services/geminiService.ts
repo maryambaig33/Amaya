@@ -2,9 +2,10 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { PRODUCTS } from "../constants";
 
 // Initialize Gemini
-// NOTE: In a real app, do not expose keys on the client side. 
-// This is for demonstration using the provided environment variable pattern.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// NOTE: We safely check for process.env to avoid runtime crashes in environments 
+// that might not have it strictly defined at runtime.
+const apiKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : '';
+const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 const SYSTEM_INSTRUCTION = `
 You are the "Amaya Coffee Sommelier", an expert coffee concierge for Amaya Coffee.

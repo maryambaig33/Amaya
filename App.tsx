@@ -90,7 +90,7 @@ const App: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-b border-coffee-100 animate-in slide-in-from-top-2 shadow-lg">
+          <div className="md:hidden bg-white border-b border-coffee-100 animate-slide-down shadow-lg">
             <div className="px-4 py-6 space-y-4">
               <button onClick={() => navigateTo(Page.HOME)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Home</button>
               <button onClick={() => navigateTo(Page.SHOP)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Shop Coffee</button>
@@ -106,7 +106,7 @@ const App: React.FC = () => {
       {isCartOpen && (
         <div className="fixed inset-0 z-[60]">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setIsCartOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl p-6 flex flex-col transform transition-transform duration-300 animate-in slide-in-from-right">
+          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl p-6 flex flex-col transform transition-transform duration-300 animate-slide-in-right">
             <div className="flex justify-between items-center mb-6 border-b border-coffee-100 pb-4">
               <h2 className="text-2xl font-serif font-bold text-coffee-900 flex items-center gap-2">
                 Your Cart <span className="text-sm font-sans font-normal text-coffee-500">({cartCount} items)</span>
@@ -178,10 +178,10 @@ const App: React.FC = () => {
               <img 
                 src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80" 
                 alt="Coffee Background" 
-                className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-1000"
+                className="absolute inset-0 w-full h-full object-cover animate-fade-in"
               />
               <div className="relative z-20 text-center text-white px-4 max-w-5xl mx-auto flex flex-col items-center">
-                <div className="animate-in slide-in-from-bottom-8 fade-in duration-1000">
+                <div className="animate-slide-up">
                   <span className="inline-block py-1.5 px-4 border border-white/40 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 text-white shadow-lg">
                     Direct Trade • Small Batch
                   </span>
