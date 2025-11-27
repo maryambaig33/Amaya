@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, Coffee, Instagram, Facebook, Twitter, ChevronRight, ShoppingBag, Sparkles } from 'lucide-react';
 import { Page, CoffeeProduct, CartItem } from './types';
 import { PRODUCTS } from './constants';
@@ -14,6 +14,17 @@ const App: React.FC = () => {
   
   // Shop Filtering State
   const [activeCategory, setActiveCategory] = useState('All');
+
+  // Close mobile menu on resize to prevent layout issues
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const addToCart = (product: CoffeeProduct) => {
     setCart(prev => {
@@ -90,10 +101,10 @@ const App: React.FC = () => {
 
             {/* Icons */}
             <div className="flex items-center space-x-5">
-              <button className="text-coffee-800 hover:text-terracotta-600 transition-colors relative group" onClick={() => setIsCartOpen(true)}>
+              <button className="text-coffee-800 hover:text-terracotta-600 transition-colors relative group p-1" onClick={() => setIsCartOpen(true)}>
                 <ShoppingCart className="w-6 h-6" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-terracotta-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                  <span className="absolute -top-0.5 -right-0.5 bg-terracotta-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm animate-bounce">
                     {cartCount}
                   </span>
                 )}
@@ -136,7 +147,7 @@ const App: React.FC = () => {
             <div className="flex-1 overflow-y-auto space-y-6 pr-2">
               {cart.length === 0 ? (
                 <div className="text-center py-20 flex flex-col items-center justify-center h-full">
-                  <div className="bg-coffee-50 p-6 rounded-full mb-4">
+                  <div className="bg-coffee-50 p-6 rounded-full mb-4 animate-pulse">
                     <ShoppingBag size={48} className="text-coffee-300" />
                   </div>
                   <h3 className="text-lg font-medium text-coffee-900 mb-2">Your cart is empty</h3>
@@ -154,9 +165,9 @@ const App: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-end mt-2">
                         <div className="flex items-center gap-3 bg-coffee-50 rounded-lg px-2 py-1">
-                          <button className="text-coffee-600 hover:text-coffee-900 px-1" onClick={() => addToCart({...item, quantity: -1})}>-</button>
+                          <button className="text-coffee-600 hover:text-coffee-900 px-1 font-bold" onClick={() => addToCart({...item, quantity: -1})}>-</button>
                           <span className="text-coffee-900 font-medium text-sm w-4 text-center">{item.quantity}</span>
-                          <button className="text-coffee-600 hover:text-coffee-900 px-1" onClick={() => addToCart(item)}>+</button>
+                          <button className="text-coffee-600 hover:text-coffee-900 px-1 font-bold" onClick={() => addToCart(item)}>+</button>
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-coffee-900">${(item.price * item.quantity).toFixed(2)}</div>
@@ -177,6 +188,12 @@ const App: React.FC = () => {
                 </div>
                 <p className="text-xs text-coffee-500 mb-4 text-center">Shipping & taxes calculated at checkout</p>
                 <Button className="w-full bg-coffee-900 hover:bg-terracotta-600 transition-colors" size="lg">Checkout</Button>
+                <button 
+                  onClick={() => setIsCartOpen(false)}
+                  className="w-full mt-3 text-sm text-coffee-500 hover:text-coffee-800 underline"
+                >
+                  Continue Shopping
+                </button>
               </div>
             )}
           </div>

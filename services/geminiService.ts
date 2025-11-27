@@ -29,6 +29,11 @@ export const getCoffeeRecommendation = async (userMessage: string): Promise<stri
   try {
     const model = 'gemini-2.5-flash';
     
+    // Ensure the message is valid
+    if (!userMessage || userMessage.trim().length === 0) {
+        return "I'm listening. How can I help you select a coffee today?";
+    }
+
     const response: GenerateContentResponse = await ai.models.generateContent({
       model: model,
       contents: userMessage,
@@ -38,9 +43,13 @@ export const getCoffeeRecommendation = async (userMessage: string): Promise<stri
       }
     });
 
-    return response.text || "I'm having trouble retrieving the tasting notes right now. Please try again.";
+    if (!response || !response.text) {
+        throw new Error("Empty response from AI");
+    }
+
+    return response.text;
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "I'm currently taking a short coffee break. Please check back in a moment.";
+    console.error("Amaya Sommelier Error:", error);
+    return "I'm currently updating my tasting notes. Please try asking me again in a moment.";
   }
 };
