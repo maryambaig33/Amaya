@@ -26,6 +26,18 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Lock body scroll when menu or cart is open to prevent background scrolling
+  useEffect(() => {
+    if (isMenuOpen || isCartOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen, isCartOpen]);
+
   const addToCart = (product: CoffeeProduct) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -41,6 +53,10 @@ const App: React.FC = () => {
     setCart(prev => prev.filter(item => item.id !== id));
   };
 
+  const handleCheckout = () => {
+    alert("This is a demo checkout. In a real app, this would take you to Stripe/Payment processing.");
+  };
+
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -48,6 +64,7 @@ const App: React.FC = () => {
   const navigateTo = (page: Page) => {
     setCurrentPage(page);
     setIsMenuOpen(false);
+    setIsCartOpen(false);
     window.scrollTo(0, 0);
   };
 
@@ -118,7 +135,7 @@ const App: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-b border-coffee-100 animate-slide-down shadow-lg">
+          <div className="md:hidden bg-white border-b border-coffee-100 animate-slide-down shadow-lg absolute w-full left-0 z-40">
             <div className="px-4 py-6 space-y-4">
               <button onClick={() => navigateTo(Page.HOME)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Home</button>
               <button onClick={() => navigateTo(Page.SHOP)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Shop Coffee</button>
@@ -131,8 +148,9 @@ const App: React.FC = () => {
       </header>
 
       {/* --- CART SIDEBAR --- */}
+      {/* High z-index to ensure it covers everything */}
       {isCartOpen && (
-        <div className="fixed inset-0 z-[60]">
+        <div className="fixed inset-0 z-[100]">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setIsCartOpen(false)} />
           <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl p-6 flex flex-col transform transition-transform duration-300 animate-slide-in-right">
             <div className="flex justify-between items-center mb-6 border-b border-coffee-100 pb-4">
@@ -187,7 +205,7 @@ const App: React.FC = () => {
                   <span className="text-2xl font-serif font-bold text-coffee-900">${cartTotal.toFixed(2)}</span>
                 </div>
                 <p className="text-xs text-coffee-500 mb-4 text-center">Shipping & taxes calculated at checkout</p>
-                <Button className="w-full bg-coffee-900 hover:bg-terracotta-600 transition-colors" size="lg">Checkout</Button>
+                <Button className="w-full bg-coffee-900 hover:bg-terracotta-600 transition-colors" size="lg" onClick={handleCheckout}>Checkout</Button>
                 <button 
                   onClick={() => setIsCartOpen(false)}
                   className="w-full mt-3 text-sm text-coffee-500 hover:text-coffee-800 underline"

@@ -61,12 +61,16 @@ export const CoffeeSommelier: React.FC = () => {
     <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden border border-coffee-100">
       <div className="bg-coffee-900 p-4 flex items-center justify-between border-b border-coffee-800">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-terracotta-500 to-coffee-700 rounded-full shadow-lg">
+          <div className="p-2 bg-gradient-to-br from-terracotta-500 to-coffee-700 rounded-full shadow-lg relative">
             <Sparkles className="w-5 h-5 text-white" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-coffee-900 rounded-full"></span>
           </div>
           <div>
             <h3 className="text-white font-serif font-medium tracking-wide">Amaya AI Sommelier</h3>
-            <p className="text-coffee-300 text-xs">Powered by Gemini 2.5</p>
+            <p className="text-coffee-300 text-xs flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-terracotta-500 rounded-full animate-pulse"></span>
+              Powered by Gemini 2.5
+            </p>
           </div>
         </div>
         <button 
@@ -133,7 +137,12 @@ export const CoffeeSommelier: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             placeholder="Describe your taste..."
             disabled={isLoading}
             className="flex-1 px-4 py-3 bg-coffee-50 border border-coffee-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracotta-500/50 text-coffee-900 placeholder:text-coffee-400 transition-all"
