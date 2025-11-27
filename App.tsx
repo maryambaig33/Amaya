@@ -49,6 +49,16 @@ const App: React.FC = () => {
     setIsCartOpen(true);
   };
 
+  const updateQuantity = (id: string, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQuantity = Math.max(0, item.quantity + delta);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }).filter(item => item.quantity > 0));
+  };
+
   const removeFromCart = (id: string) => {
     setCart(prev => prev.filter(item => item.id !== id));
   };
@@ -118,7 +128,11 @@ const App: React.FC = () => {
 
             {/* Icons */}
             <div className="flex items-center space-x-5">
-              <button className="text-coffee-800 hover:text-terracotta-600 transition-colors relative group p-1" onClick={() => setIsCartOpen(true)}>
+              <button 
+                className="text-coffee-800 hover:text-terracotta-600 transition-colors relative group p-1" 
+                onClick={() => setIsCartOpen(true)}
+                aria-label="Open Cart"
+              >
                 <ShoppingCart className="w-6 h-6" />
                 {cartCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-terracotta-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm animate-bounce">
@@ -126,7 +140,11 @@ const App: React.FC = () => {
                   </span>
                 )}
               </button>
-              <button className="md:hidden text-coffee-800" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              <button 
+                className="md:hidden text-coffee-800" 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle Menu"
+              >
                 {isMenuOpen ? <X /> : <Menu />}
               </button>
             </div>
@@ -135,13 +153,16 @@ const App: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-b border-coffee-100 animate-slide-down shadow-lg absolute w-full left-0 z-40">
-            <div className="px-4 py-6 space-y-4">
-              <button onClick={() => navigateTo(Page.HOME)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Home</button>
-              <button onClick={() => navigateTo(Page.SHOP)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Shop Coffee</button>
-              <button onClick={() => navigateTo(Page.SOMMELIER)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg flex items-center gap-2">
-                Find My Match (AI) <Sparkles size={16} className="text-terracotta-500" />
-              </button>
+          <div className="md:hidden fixed inset-0 top-20 z-40">
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
+            <div className="bg-white border-b border-coffee-100 animate-slide-down shadow-lg absolute w-full left-0 z-50">
+              <div className="px-4 py-6 space-y-4">
+                <button onClick={() => navigateTo(Page.HOME)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Home</button>
+                <button onClick={() => navigateTo(Page.SHOP)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg">Shop Coffee</button>
+                <button onClick={() => navigateTo(Page.SOMMELIER)} className="block w-full text-left text-lg font-medium text-coffee-800 py-2 hover:bg-coffee-50 px-2 rounded-lg flex items-center gap-2">
+                  Find My Match (AI) <Sparkles size={16} className="text-terracotta-500" />
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -183,9 +204,21 @@ const App: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-end mt-2">
                         <div className="flex items-center gap-3 bg-coffee-50 rounded-lg px-2 py-1">
-                          <button className="text-coffee-600 hover:text-coffee-900 px-1 font-bold" onClick={() => addToCart({...item, quantity: -1})}>-</button>
+                          <button 
+                            className="text-coffee-600 hover:text-coffee-900 px-1 font-bold w-6 h-6 flex items-center justify-center" 
+                            onClick={() => updateQuantity(item.id, -1)}
+                            aria-label="Decrease quantity"
+                          >
+                            -
+                          </button>
                           <span className="text-coffee-900 font-medium text-sm w-4 text-center">{item.quantity}</span>
-                          <button className="text-coffee-600 hover:text-coffee-900 px-1 font-bold" onClick={() => addToCart(item)}>+</button>
+                          <button 
+                            className="text-coffee-600 hover:text-coffee-900 px-1 font-bold w-6 h-6 flex items-center justify-center" 
+                            onClick={() => updateQuantity(item.id, 1)}
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-coffee-900">${(item.price * item.quantity).toFixed(2)}</div>
